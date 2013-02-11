@@ -13,12 +13,12 @@ public class Redeem extends JavaPlugin
     // Bukkit Plugin stuff
     protected static final Logger logger = Logger.getLogger("Minecraft");
     protected static final String configFile = "config.yml";
-    protected FileConfiguration config;
+    public FileConfiguration config;
     
     @Override
     public void onLoad()
     {
-        
+        initConfiguration();
     }
     
     @Override
@@ -28,39 +28,28 @@ public class Redeem extends JavaPlugin
         getCommand("canjear").setExecutor(new CanjearCommand(this));
         getCommand("premiar").setExecutor(new PremiarCommand(this));
 
-        logger.log(Level.INFO, String.format("DungeonBX v%s Enabled!", getDescription().getVersion()));
+        logger.log(Level.INFO, String.format("Redeem v%s Enabled!", getDescription().getVersion()));
     }
     
     @Override
     public void onDisable()
     {
-        
+        logger.log(Level.INFO, String.format("Redeem Disabled!", getDescription().getVersion()));
     }
     
     public static Plugin getPlugin()
     {
         return Bukkit.getServer().getPluginManager().getPlugin("Redeem");
     }
-
-    public static boolean isAvailable() 
-    {
-            Plugin plugin = getPlugin();
-
-            return (plugin instanceof Redeem) && ((Redeem) plugin).fooVariable != null;
-    }
     
     private void initConfiguration() 
     {
-        if (this.config == null) {
-            this.config = this.getConfig();
-        }
-
-        this.config.options().copyDefaults(true);
-        saveConfig();
-    }
-    
-    private void loadConfig()
-    {
-        this.initConfiguration();
+        // TODO: Leer desde archivo si existe, si no copiar default
+        this.config = this.getConfig();
+        
+        if (this.config == null)
+            this.config.options().copyDefaults(true);
+        
+        this.saveConfig();
     }
 }

@@ -20,9 +20,9 @@ public class StringUtil {
         return false;
     }
     
-    private String assembleString(String[] args)
+    public static String assembleString(String[] args)
     {
-        String aStr = (args[2] != null)? args[2] : "";
+        String aStr = (args[2] != null) ? args[2] : "";
         if(args.length > 3){
             for(int i = 3; i < args.length; i++){
                 if(aStr == ""){
