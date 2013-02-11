@@ -34,7 +34,7 @@ public class Redeem extends JavaPlugin
     @Override
     public void onDisable()
     {
-        logger.log(Level.INFO, String.format("Redeem Disabled!", getDescription().getVersion()));
+        logger.log(Level.INFO, String.format("Redeem v%s Disabled!", getDescription().getVersion()));
     }
     
     public static Plugin getPlugin()
