@@ -49,6 +49,7 @@ public class CanjearCommand implements CommandExecutor
                 if (args[1] != null)
                 {
                     int id = Integer.parseInt(args[1]);
+                    return rh.redeemItem(p, id);
                 } else {
                     p.sendMessage(ChatColor.RED + "No indicaste la id del item.");
                     return false;
@@ -74,7 +75,7 @@ public class CanjearCommand implements CommandExecutor
                     String enchant = args[1];
                     try {
                     Enchantment e = Enchantment.getByName(enchant.toUpperCase());
-                    return editor.addItemEnchant(p, e);
+                    return rh.redeemEnchant(p, e);
                     } catch (Exception e) {
                         p.sendMessage(ChatColor.RED + "El encantamiento no existe.");
                         return false;
@@ -89,15 +90,16 @@ public class CanjearCommand implements CommandExecutor
                     if (args[2] != null)
                     {
                         String color = "WHITE";
-                        if(StringUtil.startsWithIgnoreCase(COLOR_PREFIX, args[2])){
+                        if(StringUtil.startsWithIgnoreCase(COLOR_PREFIX, args[2]))
+                        {
                             color = args[2].substring(2).toUpperCase();
                             args[2] = null;
                         }
 
                         try{
                             String newName = (ChatColor.valueOf(color) + StringUtil.assembleString(args));
-                            return editor.setItemName(p, newName);
-                        }catch (Exception e){
+                            return rh.redeemCustomName(p, newName);
+                        } catch (Exception e) {
                             p.sendMessage(ChatColor.RED + "Ese color no existe!");
                             return false;
                         }
@@ -118,7 +120,7 @@ public class CanjearCommand implements CommandExecutor
 
                         try {
                             String lore = ChatColor.valueOf(color) + (ChatColor.ITALIC + StringUtil.assembleString(args));
-                            return editor.setItemLore(p, lore);
+                            return rh.redeemCustomLore(p, lore);
                         }catch (Exception ex){
                             p.sendMessage(ChatColor.RED + "Ese color no existe.");
                             return false;
@@ -128,6 +130,12 @@ public class CanjearCommand implements CommandExecutor
                         return false;
                     }
                 }
+            }
+            
+            if (args[0].equals("kit"))
+            {
+                p.sendMessage(ChatColor.YELLOW + "No se como supiste de esto, pero aun no esta implementado :)");
+                return false;
             }
         }
         

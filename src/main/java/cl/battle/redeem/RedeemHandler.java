@@ -7,6 +7,7 @@ import java.util.List;
 import org.bukkit.ChatColor;
 import org.bukkit.Material;
 import org.bukkit.configuration.file.FileConfiguration;
+import org.bukkit.enchantments.Enchantment;
 import org.bukkit.entity.Player;
 import org.bukkit.inventory.ItemStack;
 import org.bukkit.inventory.meta.ItemMeta;
@@ -84,13 +85,10 @@ public class RedeemHandler
     private int getTokenWorth(String option)
     {
         String giftPath = "redeem.gift.";
-        int worth;
+        int worth = config.getInt(giftPath + option);;
         
-        try {
-            worth = config.getInt(giftPath + option);
-        } catch (Exception e) {
+        if (worth == 0)
             return -1;
-        }
         
         return worth;
     }
@@ -127,9 +125,25 @@ public class RedeemHandler
         return true;
     }
     
+    private ItemStack createItem(int id)
+    {
+        Material type;
+        type = Material.getMaterial(id);
+        
+        if (type != null)
+            return createItem(type, 1);
+        else
+            return null;
+    }
+    
+    private ItemStack createItem(Material id, int amount)
+    {
+        return new ItemStack(id, amount);
+    }
+    
     private ItemStack createToken(int amount)
     {
-        ItemStack token = new ItemStack(Material.EMERALD);
+        ItemStack token = createItem(Material.EMERALD, amount);
         ItemMeta meta = token.getItemMeta();
         
         meta.setDisplayName(ChatColor.GREEN + "Token de evento");
@@ -148,32 +162,96 @@ public class RedeemHandler
     
     // REDEEMS
     
-    public boolean redeemItem()
+    public boolean redeemItem(Player p, int id)
     {
+        ItemStack item = createItem(id);
+        
+        if (item != null)
+        {
+            // Importante: Definir los items en minusculas y segun el enum oficial
+            int worth = getTokenWorth("item." + item.getType().toString().toLowerCase());
+            
+            if (worth == -1) 
+            {
+                if (getPlayerTokenAmount(p) > worth)
+                {
+                    removeTokens(p, worth);
+                    return addItem(p, item);
+                } else {
+                    p.sendMessage(ChatColor.RED + "No tienes suficientes tokens para este item");
+                }
+            } else {
+                p.sendMessage(ChatColor.RED + "El item que indicaste no esta disponible para canjeo");
+            }
+        } else {
+            p.sendMessage(ChatColor.RED + "El item que indicaste no existe o es invalido");
+        }
+        
         return false;
     }
     
-    public boolean redeemEnchant()
+    public boolean redeemEnchant(Player p, Enchantment e)
     {
+        if (e != null)
+        {
+            int worth = getTokenWorth("enchant");
+            
+            if (worth == -1) 
+            {
+                if (getPlayerTokenAmount(p) > worth)
+                {
+                    removeTokens(p, worth);
+                    return editor.addItemEnchant(p, e);
+                } else {
+                    p.sendMessage(ChatColor.RED + "No tienes suficientes tokens para encantar");
+                }
+            } else {
+                p.sendMessage(ChatColor.RED + "Algo raro paso, avisale a un admin");
+            }
+        } else {
+            p.sendMessage(ChatColor.RED + "El enchant que indicaste no existe o es invalido");
+        }
+        
         return false;
     }
     
     public boolean redeemExp(Player p, int amount)
     {
+        if (amount > 10)
+        {
+            int worth = getTokenWorth("enchant");
+            
+            if (worth == -1) 
+            {
+                if (getPlayerTokenAmount(p) > worth)
+                {
+                    removeTokens(p, worth);
+                    return addExpLevels(p, amount);
+                } else {
+                    p.sendMessage(ChatColor.RED + "No tienes suficientes tokens para encantar");
+                }
+            } else {
+                p.sendMessage(ChatColor.RED + "Algo raro paso, avisale a un admin");
+            }
+        } else {
+            p.sendMessage(ChatColor.RED + "Lo minimo para canjear son 10 niveles");
+        }
+        
         return false;
     }
     
     public boolean redeemKit()
     {
+        // NOT YET IMPLEMENTED
         return false;
     }
     
-    public boolean redeemCustomName()
+    public boolean redeemCustomName(Player p, String name)
     {
         return false;
     }
     
-    public boolean redeemCustomLore()
+    public boolean redeemCustomLore(Player p, String lore)
     {
         return false;
     }
